@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-serif: "Playfair Display", Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Brown palette - light mode default */
+  --color-brand-bg: #F7F0E8;
+  --color-brand-surface: #FFFBF6;
+  --color-brand-primary: #2B1D14;
+  --color-brand-secondary: #6B5645;
+  --color-brand-accent: #B5762A;
+  --color-brand-category: #8B4A2B;
+  --color-brand-urgent: #9C4A34;
+  --color-brand-border: #E4D6C6;
+}
+
+.dark {
+  /* Brown palette - dark mode */
+  --color-brand-bg: #1F1512;
+  --color-brand-surface: #2A1D17;
+  --color-brand-primary: #EDE0D3;
+  --color-brand-secondary: #B8A594;
+  --color-brand-accent: #C98A3E;
+  --color-brand-category: #A0522D;
+  --color-brand-urgent: #B5533C;
+  --color-brand-border: #3D2B1F;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-brand-bg);
+  color: var(--color-brand-primary);
+  font-size: 1.05rem;
+  line-height: 1.75;
+  letter-spacing: -0.011em;
+}
+
+/* Custom scrollbars for elegant feel */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

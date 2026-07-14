@@ -1,0 +1,63 @@
+{
+  "entities": {
+    "Subscriber": {
+      "title": "Subscriber",
+      "description": "User subscription preferences and profile",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "countries": { "type": "array" },
+        "categories": { "type": "array" },
+        "frequency": { "type": "string", "enum": ["daily", "weekly", "breaking"] },
+        "sendTime": { "type": "string" },
+        "timezone": { "type": "string" },
+        "createdAt": { "type": "integer" },
+        "referredBy": { "type": "string" },
+        "referralCount": { "type": "integer" },
+        "language": { "type": "string", "enum": ["en", "ar", "fr", "es"] },
+        "isSubscribed": { "type": "boolean" }
+      },
+      "required": ["email", "countries", "categories", "frequency", "sendTime", "timezone", "createdAt", "referralCount", "language", "isSubscribed"]
+    },
+    "MailingListSignup": {
+      "title": "MailingListSignup",
+      "description": "A simpler subscription registry for public visitors",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "createdAt": { "type": "integer" }
+      },
+      "required": ["email", "createdAt"]
+    },
+    "SavedArticle": {
+      "title": "SavedArticle",
+      "description": "A bookmarked or saved article by a subscriber",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "link": { "type": "string" },
+        "snippet": { "type": "string" },
+        "source": { "type": "string" },
+        "publishedAt": { "type": "string" },
+        "category": { "type": "string" },
+        "savedAt": { "type": "integer" }
+      },
+      "required": ["title", "link", "savedAt"]
+    }
+  },
+  "firestore": {
+    "/subscribers/{subscriberId}": {
+      "schema": "Subscriber",
+      "description": "Subscriber account registration and preferences"
+    },
+    "/subscribers/{subscriberId}/bookmarks/{bookmarkId}": {
+      "schema": "SavedArticle",
+      "description": "Bookmarked articles saved by a subscriber"
+    },
+    "/mailing_list/{signupId}": {
+      "schema": "MailingListSignup",
+      "description": "Public visitor newsletter signups captured in the footer"
+    }
+  }
+}

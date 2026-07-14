@@ -1,0 +1,76 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default-deny policy
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper function to check if user is an editor or admin safely
+    function isEditorOrAdmin() {
+      return isAuthenticated() && (
+        exists(/databases/$(database)/documents/user_roles/$(request.auth.uid)) ? (
+          get(/databases/$(database)/documents/user_roles/$(request.auth.uid)).data.get('role', 'user') == 'editor' ||
+          get(/databases/$(database)/documents/user_roles/$(request.auth.uid)).data.get('role', 'user') == 'admin'
+        ) : false
+      );
+    }
+
+    // User Roles collection
+    match /user_roles/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && (request.auth.uid == userId || isEditorOrAdmin());
+    }
+
+    // Subscribers collection
+    match /subscribers/{subscriberId} {
+      allow create: if true; // anyone can subscribe
+      allow read: if isAuthenticated() && (request.auth.uid == subscriberId || isEditorOrAdmin());
+      allow update, delete: if isAuthenticated() && (request.auth.uid == subscriberId || isEditorOrAdmin());
+
+      // Bookmarked articles subcollection
+      match /bookmarks/{bookmarkId} {
+        allow read, write: if isAuthenticated() && (request.auth.uid == subscriberId || isEditorOrAdmin());
+      }
+    }
+
+    // News Leads collection (RSS curated leads)
+    match /news_leads/{leadId} {
+      allow read: if true; // public
+      allow write: if isEditorOrAdmin();
+    }
+
+    // Newsletter Issues collection
+    match /newsletter_issues/{issueId} {
+      allow read: if true; // public can read published issues, but let's restrict drafts in frontend
+      allow write: if isEditorOrAdmin();
+    }
+
+    // Audit Logs collection
+    match /editor_logs/{logId} {
+      allow read, write: if isEditorOrAdmin();
+    }
+
+    // Configured Feeds collection
+    match /configured_feeds/{feedId} {
+      allow read: if true;
+      allow write: if isEditorOrAdmin();
+    }
+
+    // Mailing List collection
+    match /mailing_list/{signupId} {
+      allow create: if request.resource.data.keys().hasAll(['email', 'createdAt'])
+                    && request.resource.data.keys().size() == 2
+                    && request.resource.data.email is string
+                    && request.resource.data.email.size() <= 256
+                    && request.resource.data.createdAt is int;
+      allow read, update, delete: if isEditorOrAdmin();
+    }
+  }
+}
